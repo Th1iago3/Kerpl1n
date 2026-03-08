@@ -2,7 +2,7 @@
 
 The leaked exploit toolkit for various iOS versions. Extracted from `https://sadjd.mijieqi[.]cn/group.html`
 
-Partially deobfuscated and symbolicated by Claude (thanks @34306 for sponsor) and by hand.
+Partially deobfuscated, symbolicated, and modified to load decrypted payloads by Claude (thanks @34306 for sponsor) and by hand.
 
 These scripts are modified in a way that allows you to host them locally. Note that this only includes exploit chains for tested devices.
 
