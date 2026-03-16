@@ -1,13 +1,6 @@
 # Coruna
 
-The leaked exploit toolkit for various iOS versions. Extracted from `https://sadjd.mijieqi[.]cn/group.html`
-
-Partially deobfuscated, symbolicated, and modified to load decrypted payloads by Claude (thanks @34306 for sponsor) and by hand.
-
-These scripts are modified in a way that allows you to host them locally. Note that this only includes exploit chains for tested devices.
-
-## Analysis
-There are so many analysis by other people right now so I'm not doing it again, however I have a generated [ANALYSIS.md](ANALYSIS.md) specifically talking about decryption process and iOS payloads version table.
+A toolkit exploit to inject dylibs on apple devices
 
 ## Tested on
 | Device| Version | WebKit exploit chain |
