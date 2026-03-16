@@ -1,4 +1,4 @@
-# Coruna
+# Kerpl1n
 
 A toolkit exploit to inject dylibs on apple devices
 
