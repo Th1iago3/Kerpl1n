@@ -1,6 +1,6 @@
 # Kerpl1n
 
-A toolkit exploit to inject dylibs on apple devices
+A toolkit exploit to inject dylibs on apple devices, with link (webkit exploit)
 
 ## Tested on
 | Device| Version | WebKit exploit chain |
